@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWIFT EnergyAI </title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 50px auto;
+            margin-top: 10%;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+        }
+        .chat-heading {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #ffd700; /* Golden color for the heading */
+        }
+        .chat-navbar {
+            font-size: 1.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: white;
+        }
+        .navbar-container {
+            font-size: 1.0em;
+            font-weight: 200;
+            margin-bottom: 10px;
+            color: white;
+        }
+        .navbar-brand {
+            font-size: 1.0em;
+            font-weight: 200;
+            margin-bottom: 10px;
+            color: white;
+        }
+        .chat-input {
+            margin-top: 20px; /* Added margin */
+            margin-bottom: 20px;
+            height: 100px; /* Increased height */
+        }
+        .chat-button {
+            background-color: green;
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.2em;
+        }
+        .chat-response {
+            background-color: #444;
+            padding: 15px;
+            border-radius: 5px;
+            min-height: 100px; /* Minimum height for the response box */
+            margin-top: 20px;
+        }
+        .field-input {
+            margin-top: 20px; /* Added margin */
+            margin-bottom: 20px;
+            height: 50px; /* Increased height */
+            border-radius: 5px;
+        }
+
+        .accordion {
+            margin-top: 20px;
+            background-color: #444;
+            border-radius: 5px;
+        }
+        .accordion-button {
+            color: white;
+            background-color: #555;
+        }
+        .accordion-navbar {
+            color: white;
+            background-color: #555;
+        }
+        .accordion-body {
+            color: white; /* Improved visibility of text */
+        }
+        pre {
+            white-space:pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container chat-container">
+        <h1 class="chat-heading">SWIFT EnergyAI</h1>
+
+        {% include 'navbar.html' %}
+        <div class="accordion" id="appDescriptionAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="descriptionHeading">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDescription" aria-expanded="true" aria-controls="collapseDescription">
+                        About This AI Application
+                    </button>
+                </h2>
+                <div id="collapseDescription" class="accordion-collapse collapse" aria-labelledby="descriptionHeading" data-bs-parent="#appDescriptionAccordion">
+                    <div class="accordion-body text-dark">
+                        This is an AI trained on a large corpus of energy data from SWIFT and other various sources. Output This AI is designed to answer questions and generate content related to the Energy Industry.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <textarea id="postInput" class="form-control chat-input" placeholder="Type your query here..."></textarea>
+                <button id="postBtn" class="btn chat-button">Generate Post</button>
+                <div id="response" class="chat-response"></div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.getElementById('postBtn').addEventListener('click', async function() {
+            var postInput = document.getElementById('postInput').value;
+            //if the user input is not null, so if it is null, 0 or undefined then it returns false, if not then returns true and runs this condition
+            document.getElementById('response').innerHTML = '<p>Generating response...</p>';
+            const formData = new FormData();
+            //the key 'query' is the argument/parameter passed into the python function 
+            formData.append('query', postInput);
+            console.log(formData)
+            try {
+                const response = await fetch('/generate_social_media_post', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                console.log('data: ', data)
+                document.getElementById('response').innerHTML = `<p>${data.social_media_post_output}</p>`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response').innerHTML = '<p>Error processing your request</p>';
+            }
+        });
+        
+
+    </script>
+</body>
+</html>
